@@ -1,6 +1,6 @@
 #!/bin/sh
 # PROVIDE: gogs
-# REQUIRE: DAEMON NETWORKING postgres nginx
+# REQUIRE: %%REQUIRE%%
 # BEFORE:
 # KEYWORD:
 
