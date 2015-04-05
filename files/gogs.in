@@ -1,0 +1,51 @@
+#!/bin/sh
+# PROVIDE: gogs
+# REQUIRE: DAEMON NETWORKING postgres nginx
+# BEFORE:
+# KEYWORD:
+
+. /etc/rc.subr
+
+name=gogs
+rcvar=${name}_enable
+
+load_rc_config $name
+
+user="git"
+user_home="/home/git"
+command="./gogs web"
+pidfile="/var/run/${name}.pid"
+
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+status_cmd="${name}_status"
+
+gogs_start()
+{
+        export USER=$user
+        export HOME=$user_home
+        export GOPATH=$HOME/go
+        cd $GOPATH/src/github.com/gogits/gogs
+        if checkyesno ${rcvar}; then
+                /usr/sbin/daemon -u ${user} -p ${pidfile} ${command} > /var/log/gogs.log 2>&1
+        fi
+}
+
+gogs_stop()
+{
+        if [ -f ${pidfile} ]; then
+                kill `cat ${pidfile}`
+        fi
+}
+
+gogs_status()
+{
+        if [ ! -f ${pidfile} ] || kill -0 `cat ${pidfile}`; then
+                echo "It appears ${name} is not running."
+        else
+                echo "${name} seems to be running."
+        fi
+}
+
+run_rc_command $1
+
